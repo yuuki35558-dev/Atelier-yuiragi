@@ -1,0 +1,126 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="結城の箱庭">
+  <section class="hero">
+    <h1>結城の箱庭</h1>
+    <p>
+      この箱庭に存在するキャラたちを紹介します。
+    </p>
+
+    <a href="/characters/" class="enter-button">
+      箱庭を覗く
+    </a>
+  </section>
+
+  <style>
+    .hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+
+  background-image: url('/images/haikei1.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+position: relative;
+  color: #fff;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+    .hero h1 {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+  color: #fff;
+  font-weight: 500;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,0.8),
+    0 0 8px rgba(0,0,0,0.6);
+}
+
+
+    .enter-button {
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: 999px;
+      background: #333;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      .enter-button {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.enter-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.enter-button:active {
+  transform: scale(0.96);
+}
+
+    }
+
+    .enter-button:hover {
+      opacity: 0.85;
+    }
+    .hero p {
+  color: #fff;
+  font-weight: 500;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,0.8),
+    0 0 8px rgba(0,0,0,0.6);
+}
+.hero p {
+  color: #fff;
+  font-weight: 500;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,0.8),
+    0 0 8px rgba(0,0,0,0.6);
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+
+  background-image: url('/images/hero.jpg');
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+
+  color: #fff;
+}
+.character-link:active {
+  transform: scale(0.97);
+}
+
+  </style>
+</BaseLayout>

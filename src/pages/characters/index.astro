@@ -1,0 +1,220 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const characters = await getCollection('characters');
+
+const sorted = characters
+  .slice()
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
+
+const grouped = sorted.reduce<Record<string, CollectionEntry<'characters'>[]>>(
+  (acc, char) => {
+    const cat = char.data.category;
+    acc[cat] ??= [];
+    acc[cat].push(char);
+    return acc;
+  },
+  {}
+);
+---
+
+<BaseLayout title="キャラ一覧">
+
+  <h1>キャラ一覧</h1>
+
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="キャラ名で検索"
+      id="search"
+    />
+
+    <select id="categoryFilter">
+      <option value="">すべてのカテゴリ</option>
+      {Object.keys(grouped).map((cat) => (
+        <option value={cat}>{cat}</option>
+      ))}
+    </select>
+  </div>
+
+  {Object.entries(grouped).map(([category, chars]) => (
+    <section class="category">
+      <h2>{category}</h2>
+
+      <ul>
+        {chars.map((char) => (
+          <li
+  class="character-item"
+  data-title={char.data.title}
+  data-category={category}
+>
+  <a href={`/characters/${char.slug}`} class="character-link">
+{char.data.image ? (
+  <img
+    src={char.data.image}
+    alt={char.data.title}
+    class="character-thumb"
+  />
+) : (
+  <div class="character-thumb placeholder">
+    No Image
+  </div>
+)}
+    <span class="character-name">
+      {char.data.title}
+    </span>
+  </a>
+</li>
+
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <style>
+    .back-link {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: #555;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0 24px;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 6px 8px;
+      font-size: 0.9rem;
+    }
+
+    .category {
+      margin-bottom: 32px;
+    }
+
+    .category h2 {
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+    .character-thumb {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+.character-link:active {
+  transform: scale(0.96);
+}
+
+@media (hover: none) {
+  .character-link:active {
+    transform: scale(0.94);
+  }
+}
+
+
+.character-item {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.character-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+.character-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  text-decoration: none;
+  color: inherit;
+}
+
+.character-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+.character-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #fff;   /* 画像あり時は白 */
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  color: #aaa;
+  font-size: 0.8rem;
+}
+
+</style>
+
+
+  <script is:inline>
+  const searchInput = document.getElementById('search');
+  const categorySelect = document.getElementById('categoryFilter');
+  const items = document.querySelectorAll('li[data-title]');
+
+  function filter() {
+    const keyword = searchInput.value.toLowerCase();
+    const category = categorySelect.value;
+
+    items.forEach((item) => {
+      const title = item.dataset.title.toLowerCase();
+      const itemCategory = item.dataset.category;
+
+      const matchTitle = title.includes(keyword);
+      const matchCategory =
+        !category || itemCategory === category;
+
+      item.style.display =
+        matchTitle && matchCategory ? '' : 'none';
+    });
+  }
+
+  searchInput.addEventListener('input', filter);
+  categorySelect.addEventListener('change', filter);
+
+</script>
+
+
+</BaseLayout>

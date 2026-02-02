@@ -1,0 +1,255 @@
+・---
+const { title } = Astro.props;
+
+// ランダムバナー用
+type Banner = {
+  img: string;
+  url: string;
+  theme?: string; // 作品テーマに応じて後で拡張可能
+};
+
+const banners: Banner[] = [
+  { img: "/banner-narou.png", url: "https://mypage.syosetu.com/2500428/" },
+  { img: "/banner-kakuyomu.png", url: "https://kakuyomu.jp/users/yuuki58837395" },
+  { img: "/banner-alphapolis.png", url: "https://www.alphapolis.co.jp/author/detail/421275823" }
+];
+
+const randomBanner: Banner = banners[Math.floor(Math.random() * banners.length)];
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <a href="/" class="logo">結城の箱庭</a>
+
+      <!-- ハンバーガーボタン -->
+      <button class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- メニュー -->
+      <nav class="mobile-menu" id="mobileMenu">
+        <a href="/">トップ</a>
+        <a href="/characters/">キャラ一覧</a>
+        <a href="/about/">当サイトについて</a>
+      </nav>
+    </header>
+
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <main>
+      <slot />
+    </main>
+
+    <!-- 下ナビ -->
+    <div class="fixed-nav">
+      <slot name="fixed" />
+    </div>
+
+    <!-- ランダムバナー -->
+    <a
+      href={randomBanner.url}
+      class="novel-banner"
+      target="_blank"
+      rel="noopener"
+    >
+      <img src={randomBanner.img} alt="小説はこちら" />
+    </a>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("hamburger");
+        const menu = document.getElementById("mobileMenu");
+        const overlay = document.getElementById("menuOverlay");
+
+        if (!btn || !menu || !overlay) return;
+
+        const closeMenu = () => {
+          btn.classList.remove("open");
+          menu.classList.remove("open");
+          overlay.classList.remove("open");
+          document.body.classList.remove("menu-open");
+        };
+
+        const toggleMenu = () => {
+          const isOpen = menu.classList.contains("open");
+          if (isOpen) {
+            closeMenu();
+          } else {
+            btn.classList.add("open");
+            menu.classList.add("open");
+            overlay.classList.add("open");
+            document.body.classList.add("menu-open");
+          }
+        };
+
+        btn.addEventListener("click", toggleMenu);
+        overlay.addEventListener("click", closeMenu);
+
+        menu.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", closeMenu);
+        });
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+/* ---------- ヘッダー ---------- */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-weight: 600;
+  text-decoration: none;
+  color: #333;
+}
+
+/* ---------- ハンバーガーボタン ---------- */
+.hamburger {
+  width: 32px;
+  height: 24px;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #333;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hamburger span:nth-child(1) { top: 0; }
+.hamburger span:nth-child(2) { top: 10px; }
+.hamburger span:nth-child(3) { top: 20px; }
+
+.hamburger.open span:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
+}
+
+/* ---------- モバイルメニュー ---------- */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 70%;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+  padding: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: 0.3s;
+  z-index: 1002;
+}
+
+.mobile-menu.open { right: 0; }
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+  z-index: 900;
+}
+
+.menu-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+/* ---------- mainの余白 ---------- */
+main {
+  animation: fadeIn 0.4s ease-out both;
+  padding-bottom: calc(80px + 64px + 16px); 
+  /* 80px: バナー bottom
+     64px: バナー高さ
+     16px: 下ナビ想定 */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 下ナビ ---------- */
+.fixed-nav {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1000;
+}
+
+/* ---------- キャラ画像 ---------- */
+.character-image {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ---------- ランダムバナー ---------- */
+.novel-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 80px; 
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 800px;
+  aspect-ratio: 800 / 120;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.novel-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- レスポンシブ ---------- */
+@media (max-width: 400px) {
+  .novel-banner { width: 95%; }
+}
+</style>
