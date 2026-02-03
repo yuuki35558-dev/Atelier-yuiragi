@@ -1,4 +1,3 @@
-// astro.config.mjs
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
@@ -7,8 +6,5 @@ export default defineConfig({
   output: 'static',
   build: {
     outDir: 'docs',
-  },
-  devToolbar: {
-    enabled: false,
   },
 });
