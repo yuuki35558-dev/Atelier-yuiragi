@@ -1,9 +1,14 @@
+// astro.config.mjs
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://yuuki35558-dev.github.io/Atelier-yuiragi/',
+  site: 'https://yuuki35558-dev.github.io',
+  base: '/Atelier-yuiragi',   // ← これ！！！
   output: 'static',
-  devOptions: { port: 4321 },
-  devToolbar: { enabled: false },
-  build: { outDir: 'docs', sitemap: true },
+  build: {
+    outDir: 'docs',
+  },
+  devToolbar: {
+    enabled: false,
+  },
 });
