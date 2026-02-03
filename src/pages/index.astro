@@ -10,10 +10,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       この箱庭に存在するキャラたちを紹介します。
     </p>
 
-    <a href="/characters/" class="enter-button">
+    <a href={`${import.meta.env.BASE_URL}characters/`} class="enter-button">
+  箱庭を覗く
+</a>
 
-      箱庭を覗く
-    </a>
   </section>
 
  <style>
